@@ -24,7 +24,7 @@ val config: PubSubConfig = PubSubConfig(
 
 Or use a configuration file with the credentials and initialize the object later (e.g. `application.conf`).
 
-## Producer
+### Producer
 
 Example of a producer/publisher:
 
@@ -34,6 +34,7 @@ import akka.stream.ActorMaterializer
 import com.rhdzmota.pubsub.{PubSubConfig, PubSubProducer}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Example {
 
@@ -51,7 +52,7 @@ object Example {
     val exampleAttributes = Some(Map("key" -> "value"))
     
     val result: Option[Future[Seq[Seq[String]]]] = pubSubConfig.map(config => {
-      val pubSubProducer= PubSubProducer(config)
+      val pubSubProducer = PubSubProducer(config)
       pubSubProducer.publish(exampleTopic, exampleData,
         exampleMessageId, exampleAttributes)
     })
@@ -65,7 +66,7 @@ object Example {
 
 ```
 
-## Consumer
+### Consumer
 
 Example of a consumer/subscriber:
 ```scala
@@ -88,8 +89,15 @@ object Example {
     val printMessageFunction: ReceivedMessage => Unit = 
       (receivedMessage: ReceivedMessage) => println(receivedMessage.message,toString)
       
-    pubSubConfig 
+    val graph = pubSubConfig.map(config => {
+      val pubSubConsumer = PubSubConsumer(config)
+      pubSubConsumer.subscribe(printMessageFunction)(exampleSubscription)
+    })
     
+    graph match {
+      case Some(runnable) => runnable.run()
+      case None => println("Missing env variables")
+    }
   }
 }
 
