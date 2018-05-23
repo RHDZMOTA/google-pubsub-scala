@@ -17,8 +17,8 @@ case class PubSubProducer(config: PubSubConfig)(implicit actorSystem: ActorSyste
   def publishFlow(topic: String): Flow[PublishRequest, Seq[String], NotUsed] =
     GooglePubSub.publish(config.projectId, config.apiKey, config.clientEmail, config.privateKey, topic)
 
-  def publish(topic: String, messageId: String, data: String): Future[Seq[Seq[String]]] = {
-    val publishMessage = PubSubMessage(messageId, data)
+  def publish(topic: String, data: String, messageId: String, attributes: Option[Map[String, String]] = None): Future[Seq[Seq[String]]] = {
+    val publishMessage = PubSubMessage(data, messageId, attributes)
     val publishRequest = PublishRequest(Seq(publishMessage))
     source(publishRequest).via(publishFlow(topic)).runWith(Sink.seq)
   }

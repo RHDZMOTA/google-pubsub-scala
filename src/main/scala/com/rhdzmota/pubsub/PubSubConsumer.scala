@@ -25,5 +25,6 @@ case class PubSubConsumer(config: PubSubConfig)(implicit actorSystem: ActorSyste
       .to(acknowledgeSink(subscription))
 
   def identitySubscribe: String => RunnableGraph[NotUsed] = subscribe((message: ReceivedMessage) => message)
-  def printlnSubscribe: String => RunnableGraph[NotUsed] = subscribe((message: ReceivedMessage) => println(message))
+  def printlnSubscribe: String => RunnableGraph[NotUsed]  = subscribe((message: ReceivedMessage) =>
+    println(message.message.toString))
 }
