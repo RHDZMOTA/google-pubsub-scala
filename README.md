@@ -1,6 +1,8 @@
-# PUBSUB Scala
+# PUBSUB Scala 
 
-Utility code for using Google PubSub with Scala (Akka Streams).
+Utility code for using Google PubSub with Scala (Akka Streams). This repo follows the [SemVer Specification](https://semver.org/).
+
+* Current version: **1.0.0**
 
 ## Usage
 
